@@ -24,6 +24,9 @@ const websitesQueryUrl = (query) => {
 const websiteUrl = (clientId) => {
   return `https://noco.keokee.com/dashboard/#/nc/p_sapep8llkzqyfl/md_6o8hnu4g5grkd8?rowId=${clientId}`;
 };
+const accountUrl = (clientId) => {
+  return `https://noco.keokee.com/dashboard/#/nc/p_sapep8llkzqyfl/md_pl3sr1rtjqsgay?rowId=${clientId}`;
+};
 const queryNoco = async (token, url) => {
   const res = await fetch(url, {
     method: "GET",
@@ -43,11 +46,11 @@ const queryNoco = async (token, url) => {
 const { list: accounts } = await queryNoco(nocoToken, accountsQueryUrl(argv._.join('%25')));
 const res = accounts.map((acct) => {
   return {
+    client: acct["Hosting Clients"][0]["Client Name"],
     username: acct.Username,
     password: acct.Password,
-    client: acct["Hosting Clients"][0]["Client Name"],
-    clientId: acct["Hosting Clients"][0].ncRecordId,
-    clientId: websiteUrl(acct["Hosting Clients"][0].ncRecordId),
+    accountUrl: accountUrl(acct.ncRecordId),
+    clientUrl: websiteUrl(acct["Hosting Clients"][0].ncRecordId),
   };
 });
 console.dir(res);
