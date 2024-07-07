@@ -1,0 +1,21 @@
+{
+  "name": "keokee-noco-cli",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "A cli to query a the company NOCO database",
+  "main": "index.js",
+  "bin": {
+    "keokee-noco": "index.js"
+  },
+  "scripts": {},
+  "keywords": [
+    "keokee",
+    "noco",
+    "api"
+  ],
+  "author": "Mario Yepes",
+  "license": "ISC",
+  "dependencies": {
+    "yargs": "^17.7.2"
+  }
+}
