@@ -3,15 +3,23 @@
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
-const { argv } = yargs(hideBin(process.argv));
+const {
+  argv: {
+    _: [command, ...args],
+  },
+} = yargs(hideBin(process.argv));
 const nocoToken = process.env.NOCO_TOKEN;
 
 if (!nocoToken) {
   console.error("The NOCO_TOKEN environment variable is missing or empty");
   process.exit(1);
 }
-if (0 === argv._.length) {
-  console.error('No query parammeter added');
+if (!command) {
+  console.error("You have to specify a command");
+  process.exit(1);
+}
+if (!args) {
+  console.error("No query parammmeters provided");
   process.exit(1);
 }
 
@@ -43,14 +51,36 @@ const queryNoco = async (token, url) => {
   return data;
 };
 
-const { list: accounts } = await queryNoco(nocoToken, accountsQueryUrl(argv._.join('%25')));
-const res = accounts.map((acct) => {
-  return {
-    client: acct["Hosting Clients"][0]["Client Name"],
-    username: acct.Username,
-    password: acct.Password,
-    accountUrl: accountUrl(acct.ncRecordId),
-    clientUrl: websiteUrl(acct["Hosting Clients"][0].ncRecordId),
-  };
-});
-console.dir(res);
+let values = [];
+switch (command.trim().toLowerCase()) {
+  case "accounts":
+    console.error(`Quering the database for ${args.join(" ")} account`);
+    const { list: accounts } = await queryNoco(
+      nocoToken,
+      accountsQueryUrl(args.join("%25")),
+    );
+    values = accounts.map((acct) => ({
+      client: acct["Hosting Clients"][0]["Client Name"],
+      username: acct.Username,
+      password: acct.Password,
+      accountUrl: accountUrl(acct.ncRecordId),
+      clientUrl: websiteUrl(acct["Hosting Clients"][0].ncRecordId),
+    }));
+    break;
+  case "websites":
+    console.error(`Quering the database for ${args.join(" ")} website`);
+    const { list: websites } = await queryNoco(
+      nocoToken,
+      websitesQueryUrl(args.join("%25")),
+    );
+    values = websites.map((site) => ({
+      client: site["Client Name"],
+      webAddress: site["Web Address"],
+      hosting: site["Hosting Provider"],
+      notes: site["Additional Notes"],
+    }));
+    break;
+  default:
+}
+
+console.log(JSON.stringify(values, null, 4));
