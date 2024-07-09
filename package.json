@@ -1,11 +1,11 @@
 {
-  "name": "keokee-noco-cli",
+  "name": "keokee-cli",
   "type": "module",
   "version": "1.0.0",
-  "description": "A cli to query a the company NOCO database",
+  "description": "A cli to query a the company NOCO database, The cloudflare account among other things",
   "main": "index.js",
   "bin": {
-    "keokee-noco": "index.js"
+    "keokee-cli": "index.js"
   },
   "scripts": {},
   "keywords": [
@@ -16,6 +16,6 @@
   "author": "Mario Yepes",
   "license": "ISC",
   "dependencies": {
-    "yargs": "^17.7.2"
+    "commander": "^12.1.0"
   }
 }
