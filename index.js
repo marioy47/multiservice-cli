@@ -7,6 +7,7 @@ import cloudflare from "./lib/cloudflare.js";
 const program = new Command();
 program
   .command("noco")
+  .alias("nc")
   .description("Query the noco database")
   .addOption(
     new Option("--format <format>", "Output format in the console").choices([
@@ -19,21 +20,28 @@ program
   )
   .argument("<query...>", "The string to query. PE `rust construction`")
   .action((table, query, format) => {
-    (async () => {
-      await noco(table, query, format);
-    })();
+    noco(table, query, format);
   });
 
 program
   .command("cloudflare")
-  .description("Query all managed zones in Cloudflare")
+  .alias("cf")
+  .description("Query Cloudflare for zones and records")
   .addOption(
-    new Option("--format", "How do you want to results")
-      .choices(["json", "table"])
+    new Option("--format <format>", "How do you want to display the results").choices([
+      "json",
+      "table",
+    ]),
   )
-.argument("<query...>", "Part of the name of the zone. Pe `180closet`")
-.action((query, format) => {
-    cloudflare(query, format);
-  })
+  .addArgument(
+    new Argument("type", "Type of query/seawrch to perform").choices([
+      "zones",
+      "records",
+    ]),
+  )
+  .argument("<query...>", "Part of the name of the zone. Pe `180closet`")
+  .action((type, query, format) => {
+    cloudflare(type, query, format);
+  });
 
 program.parse(process.argv);
