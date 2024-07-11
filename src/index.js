@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import { Command, Argument, Option } from "commander";
-import noco from "./lib/noco.js";
-import cloudflare from "./lib/cloudflare.js";
+import noco from "./noco.js";
+import cloudflare from "./cloudflare.js";
 
 const program = new Command();
 program
