@@ -1,10 +1,15 @@
 /**
+ * @param {string} type Which action to perform
  * @param {Array<string>} query to be sent to noco for quering
  * @param {Object} options  Additional parammeters
  * @param {string} options.format One of `table` or `json` (json if none specified)
  * @returns {void}
  */
-const cloudflare = async (type, query, { format }) => {
+const cloudflare = async (
+  type: string,
+  query: Array<string>,
+  { format }: { [key: string]: string },
+): Promise<void> => {
   const token = getCloudflareTokenOrExit();
 
   let values = [];
@@ -37,13 +42,14 @@ const getCloudflareTokenOrExit = () => {
   return token;
 };
 
-const queryZones = async (token, query) => {
+const queryZones = async (token: string, query: Array<string>) => {
   console.error(`Quering Cloudflare for ${query.join(" ")}`);
   const { result: data } = await fetchCloudflareData(
     token,
     zonesQueryUrl(query.join("%25")),
   );
-  return data.map((item) => ({
+  // TODO: Crete interface for CF response.
+  return data.map((item:any) => ({
     name: item.name,
     originalRegistrar: item.original_registrar,
     account: item.account.name,
@@ -52,7 +58,7 @@ const queryZones = async (token, query) => {
   }));
 };
 
-const queryRecords = async (token, [query]) => {
+const queryRecords = async (token: string, [query]: Array<string>) => {
   console.error(`Getting records for ${query}`);
   const [zones] = await queryZones(token, [query]);
   if (undefined === zones) return [];
@@ -60,7 +66,8 @@ const queryRecords = async (token, [query]) => {
     token,
     dnsRecordsUrl(zones.id),
   );
-  return data.map((item) => ({
+  // TODO Create interface for this response
+  return data.map((item: any) => ({
     type: item.type,
     name: item.name,
     value: item.content.substring(0, 50),
@@ -70,7 +77,7 @@ const queryRecords = async (token, [query]) => {
   }));
 };
 
-const fetchCloudflareData = async (token, url) => {
+const fetchCloudflareData = async (token:string, url:string) => {
   const res = await fetch(url, {
     method: "GET",
     headers: {
@@ -86,15 +93,15 @@ const fetchCloudflareData = async (token, url) => {
   return data;
 };
 
-const zonesQueryUrl = (query) => {
+const zonesQueryUrl = (query:string) => {
   return `https://api.cloudflare.com/client/v4/zones?name=contains:${query}`;
 };
 
-const dnsRecordsUrl = (zoneId) => {
+const dnsRecordsUrl = (zoneId:string) => {
   return `https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records?per_page=200`;
 };
 
-const cloudflareZoneUrl = (clientId) => {
+const cloudflareZoneUrl = (clientId:string) => {
   return `https://dash.cloudflare.com/820aebacb8de1506ddd445529df1c997/${clientId}/dns/records`;
 };
 

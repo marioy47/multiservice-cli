@@ -5,7 +5,11 @@
  * @param {string} options.format One of `table` or `json` (json if none specified)
  * @returns {void}
  */
-const noco = async (table, query, { format }) => {
+const noco = async (
+  table: string,
+  query: Array<string>,
+  { format }: { [key: string]: string },
+): Promise<void> => {
   const token = getNocoTokenOrExit();
   let values = [];
   let columns = ["client"];
@@ -40,19 +44,19 @@ const getNocoTokenOrExit = () => {
   }
   return token;
 };
-const accountsUrlTemplate = (query) => {
+const accountsUrlTemplate = (query: string) => {
   return `https://noco.keokee.com/api/v2/tables/md_pl3sr1rtjqsgay/records?offset=0&limit=100&where=(Hosting%20Clients%2Clike%2C%25${query}%25)&viewId=vw_pxoltlm6jdqya6`;
 };
-const websitesUrlTemplate = (query) => {
+const websitesUrlTemplate = (query: string) => {
   return `https://noco.keokee.com/api/v2/tables/md_6o8hnu4g5grkd8/records?offset=0&limit=100&where=(Client%20Name%2Clike%2C%25${query}%25)&viewId=vw_9iah3ysaucva77`;
 };
-const nocoWebsiteUrlFor = (clientId) => {
+const nocoWebsiteUrlFor = (clientId: string) => {
   return `https://noco.keokee.com/dashboard/#/nc/p_sapep8llkzqyfl/md_6o8hnu4g5grkd8?rowId=${clientId}`;
 };
-const nocoAccountUrlFor = (clientId) => {
+const nocoAccountUrlFor = (clientId: string) => {
   return `https://noco.keokee.com/dashboard/#/nc/p_sapep8llkzqyfl/md_pl3sr1rtjqsgay?rowId=${clientId}`;
 };
-const fetchNocoData = async (token, url) => {
+const fetchNocoData = async (token: string, url: string) => {
   const res = await fetch(url, {
     method: "GET",
     headers: {
@@ -67,13 +71,14 @@ const fetchNocoData = async (token, url) => {
   const data = await res.json();
   return data;
 };
-const queryAccountsTable = async (nocoToken, query) => {
+const queryAccountsTable = async (nocoToken: string, query: Array<string>) => {
   console.error(`Quering the database for ${query.join(" ")} account`);
   const { list: accounts } = await fetchNocoData(
     nocoToken,
     accountsUrlTemplate(query.join("%25")),
   );
-  return accounts.map((acct) => ({
+  // TODO Create an Interface for NOCO results
+  return accounts.map((acct: any) => ({
     client: acct["Hosting Clients"][0]["Client Name"],
     username: acct.Username,
     password: acct.Password,
@@ -81,13 +86,14 @@ const queryAccountsTable = async (nocoToken, query) => {
     clientUrl: nocoWebsiteUrlFor(acct["Hosting Clients"][0].ncRecordId),
   }));
 };
-const queryWebsitesTable = async (nocoToken, query) => {
-  console.error(`Quering the database for ${query.join(" ")} website`);
+const queryWebsitesTable = async (nocoToken: string, query: Array<string>) => {
+  console.error(`Quering the databasen for ${query.join(" ")} website`);
   const { list: websites } = await fetchNocoData(
     nocoToken,
     websitesUrlTemplate(query.join("%25")),
   );
-  return websites.map((site) => ({
+  // TODO Create an Interface for NOCO results
+  return websites.map((site: any) => ({
     client: site["Client Name"],
     webAddress: site["Web Address"],
     hosting: site["Hosting Provider"],
