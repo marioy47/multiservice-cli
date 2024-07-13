@@ -3,11 +3,12 @@
   "type": "module",
   "version": "1.0.0",
   "description": "A cli to query a the company NOCO database, The cloudflare account among other things",
-  "main": "src/index.js",
   "bin": {
-    "keokee-cli": "src/index.js"
+    "keokee-cli": "dist/index.js"
   },
-  "scripts": {},
+  "scripts": {
+    "start": "tsc -w"
+  },
   "keywords": [
     "keokee",
     "noco",
@@ -17,5 +18,9 @@
   "license": "ISC",
   "dependencies": {
     "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "typescript": "^5.5.3"
   }
 }
