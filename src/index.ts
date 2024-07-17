@@ -19,7 +19,7 @@ program
     ]),
   )
   .addArgument(
-    new Argument("<table>", "Table to query").choices(["accounts", "websites"]),
+    new Argument("<table>", "Table to query").choices(["accounts", "acct", "websites", "sites"]),
   )
   .argument("<query...>", "The string to query. PE `rust construction`")
   .action((table, query, format) => {
@@ -49,9 +49,9 @@ program
 
 program
   .command("spinupwp")
-  .alias("spin")
-  .alias("sp")
+  .alias("spinup")
   .alias("spwp")
+  .alias("sp")
   .description("Searches servers and domains in SpinupWP")
   .addOption(
     new Option(
@@ -62,11 +62,11 @@ program
   .addArgument(
     new Argument("type", "Type of action or request to do in Spinup").choices([
       "servers",
-      "domains",
+      "sites",
     ]),
   )
   .action((type, query, format) => {
-    spinupwp(type, query, format);
+    spinupwp(type);
   });
 
 program.parse(process.argv);

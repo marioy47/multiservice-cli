@@ -17,10 +17,12 @@ const noco = async (
   // Query the selected table.
   switch (table.trim().toLowerCase()) {
     case "accounts":
+    case "acct":
       values = await queryAccountsTable(token, query);
       columns.push("username", "password");
       break;
     case "websites":
+    case "sites":
       values = await queryWebsitesTable(token, query);
       columns.push("webAddress", "hosting");
       break;
@@ -95,7 +97,7 @@ const queryWebsitesTable = async (nocoToken: string, query: Array<string>) => {
   // TODO Create an Interface for NOCO results
   return websites.map((site: any) => ({
     client: site["Client Name"],
-    webAddress: site["Web Address"],
+    webAddress: `https://${site["Web Address"].trim('https://')}`,
     hosting: site["Hosting Provider"],
     notes: site["Additional Notes"],
     clientUrl: nocoWebsiteUrlFor(site.ncRecordId),
