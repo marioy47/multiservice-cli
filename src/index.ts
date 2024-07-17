@@ -1,9 +1,10 @@
 #!/usr/bin/env node
-
+ 
 import { Command, Argument, Option } from "commander";
 import noco from "./noco.js";
 import cloudflare from "./cloudflare.js";
 import spinupwp from "./spinupwp.js";
+import wpengine from "./wpengine.js";
 
 const program = new Command();
 
@@ -67,6 +68,20 @@ program
   )
   .action((type,format) => {
     spinupwp(type, format);
+  });
+
+program
+  .command("wpengine")
+.description("Searches for installs in WP Engine")
+.addOption(
+    new Option("--format <format>", "Output format").choices(["json", "table"])
+  )
+.addArgument(
+    new Argument('type', 'What to query in WPEngine').choices(['installs'])
+  )
+.argument("[...query]", "Account to find")
+.action((type, query, format) => {
+    wpengine(type, format, query);
   });
 
 program.parse(process.argv);
