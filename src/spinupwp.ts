@@ -1,6 +1,9 @@
 // TODO: Remove all the 'any' types in favor of interfaces.
 
-export default async (type: string): Promise<void> => {
+const spinupwp = async (
+  type: string,
+  { format }: { [k: string]: string },
+): Promise<void> => {
   const token = getEnvTokenOrExit();
   let values: Object[] = [];
 
@@ -12,7 +15,15 @@ export default async (type: string): Promise<void> => {
       values = await getSitesData(token);
       break;
   }
-  console.table(values);
+  switch(format?.trim().toLowerCase()) {
+    case "json":
+      console.log(JSON.stringify(values, null, 4));
+      break;
+    case "table":
+    default: 
+      console.table(values);
+      break;
+  }
 };
 
 const getEnvTokenOrExit = (): string => {
@@ -32,7 +43,7 @@ const getServerData = async (token: string) => {
     "https://api.spinupwp.app/v1/servers?limit=100",
   );
 
-  return data.map((item : any) => ({
+  return data.map((item: any) => ({
     id: item.id,
     name: item.name,
     ip: item.ip_address,
@@ -41,10 +52,7 @@ const getServerData = async (token: string) => {
   }));
 };
 
-const fetchSpinupData = async (
-  token: string,
-  url: string,
-) => {
+const fetchSpinupData = async (token: string, url: string) => {
   const data = await fetch(url, {
     method: "GET",
     headers: {
@@ -58,7 +66,7 @@ const fetchSpinupData = async (
 const getSitesData = async (token: string) => {
   const servers = await getServerData(token);
   const dashboardUrls: { [key: string]: [string, string] } = {};
-  const ids = servers.map((item:any) => {
+  const ids = servers.map((item: any) => {
     dashboardUrls[item.id] = [
       `https://spinupwp.app/keokee/servers/${item.id}`,
       item.name,
@@ -71,7 +79,7 @@ const getSitesData = async (token: string) => {
   const allServers = await Promise.all(ids);
   const allSites: Object[] = [];
   allServers.forEach(({ data }) => {
-    const sites = data.map((item:any) => ({
+    const sites = data.map((item: any) => ({
       id: item.id,
       domain: item.domain,
       server: dashboardUrls[item.server_id][1],
@@ -83,3 +91,5 @@ const getSitesData = async (token: string) => {
   });
   return allSites;
 };
+
+export default spinupwp;

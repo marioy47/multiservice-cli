@@ -56,7 +56,7 @@ program
   .addOption(
     new Option(
       "--format <format>",
-      "How do you want to display the results in the console",
+      "How do you want to display the results",
     ).choices(["json", "table"]),
   )
   .addArgument(
@@ -65,8 +65,8 @@ program
       "sites",
     ]),
   )
-  .action((type, query, format) => {
-    spinupwp(type);
+  .action((type,format) => {
+    spinupwp(type, format);
   });
 
 program.parse(process.argv);
