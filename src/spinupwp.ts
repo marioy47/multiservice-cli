@@ -3,6 +3,7 @@
 const spinupwp = async (
   type: string,
   { format }: { [k: string]: string },
+  query: string,
 ): Promise<void> => {
   const token = getEnvTokenOrExit();
   let values: Object[] = [];
@@ -12,15 +13,15 @@ const spinupwp = async (
       values = await getServerData(token);
       break;
     case "sites":
-      values = await getSitesData(token);
+      values = await getSitesData(token, query);
       break;
   }
-  switch(format?.trim().toLowerCase()) {
+  switch (format?.trim().toLowerCase()) {
     case "json":
       console.log(JSON.stringify(values, null, 4));
       break;
     case "table":
-    default: 
+    default:
       console.table(values);
       break;
   }
@@ -63,7 +64,7 @@ const fetchSpinupData = async (token: string, url: string) => {
   return await data.json();
 };
 
-const getSitesData = async (token: string) => {
+const getSitesData = async (token: string, query: string = "") => {
   const servers = await getServerData(token);
   const dashboardUrls: { [key: string]: [string, string] } = {};
   const ids = servers.map((item: any) => {
@@ -89,7 +90,9 @@ const getSitesData = async (token: string) => {
     }));
     allSites.push(...sites);
   });
-  return allSites;
+  return allSites.filter((item: any): any => {
+    return item.domain?.includes(query);
+  });
 };
 
 export default spinupwp;

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
- 
+
 import { Command, Argument, Option } from "commander";
 import noco from "./noco.js";
 import cloudflare from "./cloudflare.js";
@@ -20,7 +20,12 @@ program
     ]),
   )
   .addArgument(
-    new Argument("<table>", "Table to query").choices(["accounts", "acct", "websites", "sites"]),
+    new Argument("<table>", "Table to query").choices([
+      "accounts",
+      "acct",
+      "websites",
+      "sites",
+    ]),
   )
   .argument("<query...>", "The string to query. PE `rust construction`")
   .action((table, query, format) => {
@@ -66,21 +71,22 @@ program
       "sites",
     ]),
   )
-  .action((type,format) => {
-    spinupwp(type, format);
+  .argument("[...query]", "Site to find")
+  .action((type, query, format) => {
+    spinupwp(type, format, query);
   });
 
 program
   .command("wpengine")
-.description("Searches for installs in WP Engine")
-.addOption(
-    new Option("--format <format>", "Output format").choices(["json", "table"])
+  .description("Searches for installs in WP Engine")
+  .addOption(
+    new Option("--format <format>", "Output format").choices(["json", "table"]),
   )
-.addArgument(
-    new Argument('type', 'What to query in WPEngine').choices(['installs'])
+  .addArgument(
+    new Argument("type", "What to query in WPEngine").choices(["installs"]),
   )
-.argument("[...query]", "Account to find")
-.action((type, query, format) => {
+  .argument("[...query]", "Account to find")
+  .action((type, query, format) => {
     wpengine(type, format, query);
   });
 
